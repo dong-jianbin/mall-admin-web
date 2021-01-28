@@ -358,6 +358,27 @@ export const asyncRouterMap = [
       }
     ]
   },
+  {
+    path:'/sys',
+    component: Layout,
+    redirect: '/sys/admin',
+    name: 'sys',
+    meta: {title: '系统', icon: 'system'},
+    children: [
+      {
+        path: 'task',
+        name: 'task',
+        component: () => import('@/views/task/index'),
+        meta: {title: '任务维护', icon: 'job'}
+      },
+      {
+        path: 'institution',
+        name: 'institution',
+        component: () => import('@/views/ums/admin/index'),
+        meta: {title: '机构管理', icon: 'institution'}
+      }
+    ]
+  },
   {path: '*', redirect: '/404', hidden: true}
 ]
 
