@@ -103,7 +103,7 @@
   </div>
 </template>
 <script>
-  import {fetchList} from '@/api/job';
+  import {fetchList,doPost,doPut,doDelete} from '@/api/job';
 
   const defaultListQuery = {
     currentPage: 1,
@@ -111,11 +111,18 @@
     keyword: null
   };
 
+  const defaultOprationParams = {
+    jobClassName: null,
+    jobGroupName: null,
+    cronExpression: null
+  };
+
   export default {
     name: 'joblist',
     data() {
       return {
             listQuery: Object.assign({}, defaultListQuery),
+            oprationParams: Object.assign({}, defaultOprationParams),
             //表格当前页数据
             tableData: [],
             //请求的URL
@@ -165,68 +172,67 @@
       // 从服务器读取数据
       loadData: function (currentPage, pageSize) {
         this.loading = true;
+        this.listQuery.currentPage = currentPage;
+        this.listQuery.pageSize = pageSize;
+
         fetchList(this.listQuery).then(response => {
           this.loading = false;
           this.tableData = response.data.list;
           this.totalCount = response.data.total;
         });
-          
       },
       // 删除任务
       handleDelete: function (index, row) {
-          this.$http.delete('job', {
-              params: {
-                  "jobClassName": row.jobName,
-                  "jobGroupName": row.jobGroup
-              }
-          }, {emulateJSON: true}).then(function (res) {
-              this.loadData(this.currentPage, this.pagesize);
-          }, function () {
-              console.log('failed');
-          });
+        this.oprationParams.jobClassName = row.jobName;
+        this.oprationParams.jobGroupName = row.jobGroup;
+        
+        doDelete(this.oprationParams).then(response => {
+          this.loadData(this.currentPage, this.pagesize);
+        });
       },
       // 暂停任务
       handlePause: function (index, row) {
-          this.$http.put('job?pause', {
-              "jobClassName": row.jobName,
-              "jobGroupName": row.jobGroup
-          }, {emulateJSON: true}).then(function (res) {
-              this.loadData(this.currentPage, this.pagesize);
-          }, function () {
-              console.log('failed');
-          });
+
+        this.oprationParams.jobClassName = row.jobName;
+        this.oprationParams.jobGroupName = row.jobGroup;
+        delete this.oprationParams.resume;
+        delete this.oprationParams.cron;
+        let type = {pause: "pause"};
+        
+        doPut(this.oprationParams, type).then(response => {
+          this.loadData(this.currentPage, this.pagesize);
+        });
       },
       // 恢复任务
       handleResume: function (index, row) {
-          this.$http.put('job?resume', {
-              "jobClassName": row.jobName,
-              "jobGroupName": row.jobGroup
-          }, {emulateJSON: true}).then(function (res) {
-              this.loadData(this.currentPage, this.pagesize);
-          }, function () {
-              console.log('failed');
-          });
+        this.oprationParams.jobClassName = row.jobName;
+        this.oprationParams.jobGroupName = row.jobGroup;
+        delete this.oprationParams.pause;
+        delete this.oprationParams.cron;
+        let type = {resume: "resume"};
+        
+        doPut(this.oprationParams, type).then(response => {
+          this.loadData(this.currentPage, this.pagesize);
+        });
       },
       // 搜索
       search: function () {
           this.loadData(this.currentPage, this.pagesize);
       },
       // 弹出对话框
-      handleadd: function () {
+      handleAdd: function () {
           this.dialogFormVisible = true;
       },
       // 添加
       add: function () {
-          this.$http.post('job', {
-              "jobClassName": this.form.jobName,
-              "jobGroupName": this.form.jobGroup,
-              "cronExpression": this.form.cronExpression
-          }, {emulateJSON: true}).then(function (res) {
-              this.loadData(this.currentPage, this.pagesize);
-              this.dialogFormVisible = false;
-          }, function () {
-              console.log('failed');
-          });
+        this.oprationParams.jobClassName = this.form.jobName;
+        this.oprationParams.jobGroupName = this.form.jobGroup;
+        this.oprationParams.cronExpression = this.form.cronExpression;
+        
+        doPost(this.oprationParams).then(response => {
+          this.loadData(this.currentPage, this.pagesize);
+          this.dialogFormVisible = false;
+        });
       },
       // 更新
       handleUpdate: function (index, row) {
@@ -237,18 +243,17 @@
       },
       // 更新任务
       update: function () {
-          this.$http.put('job?cron',
-              {
-                  "jobClassName": this.updateform.jobName,
-                  "jobGroupName": this.updateform.jobGroup,
-                  "cronExpression": this.updateform.cronExpression
-              }, {emulateJSON: true}
-          ).then(function (res) {
-              this.loadData(this.currentPage, this.pagesize);
-              this.updateFormVisible = false;
-          }, function () {
-              console.log('failed');
-          });
+        this.oprationParams.jobClassName = this.updateform.jobName;
+        this.oprationParams.jobGroupName = this.updateform.jobGroup;
+        this.oprationParams.cronExpression = this.updateform.cronExpression;
+        delete this.oprationParams.pause;
+        delete this.oprationParams.resume;
+        let type = {cron: "cron"};
+        
+        doPut(this.oprationParams, type).then(response => {
+          this.loadData(this.currentPage, this.pagesize);
+          this.updateFormVisible = false;
+        });
 
       },
       // 每页显示数据量变更
