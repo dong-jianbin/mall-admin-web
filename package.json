@@ -20,7 +20,12 @@
     "v-distpicker": "^1.0.20",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
-    "vuex": "^3.0.1"
+    "vuex": "^3.0.1",
+    "@antv/dom-util": "2.0.2",
+    "@antv/matrix-util": "2.0.7",
+    "@antv/g-canvas": "^0.4.12",
+    "@antv/g6": "3.5.2",
+    "@antv/util": "~2.0.9"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
@@ -60,7 +65,11 @@
     "webpack": "^3.6.0",
     "webpack-bundle-analyzer": "^2.9.0",
     "webpack-dev-server": "^2.9.1",
-    "webpack-merge": "^4.1.0"
+    "webpack-merge": "^4.1.0",
+    "numericjs": "^1.2.6",
+    "raw-loader": "^3.1.0",
+    "@vue/cli-plugin-babel": "^4.0.0",
+    "@vue/cli-service": "^4.0.0"
   },
   "engines": {
     "node": ">= 6.0.0",

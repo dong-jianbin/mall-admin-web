@@ -372,6 +372,12 @@ export const asyncRouterMap = [
         meta: {title: '任务维护', icon: 'job'}
       },
       {
+        path: 'bpmn',
+        name: 'bpmn',
+        component: () => import('@/views/bpmn/index'),
+        meta: {title: '流程图', icon: 'activiti'}
+      },
+      {
         path: 'institution',
         name: 'institution',
         component: () => import('@/views/ums/admin/index'),
